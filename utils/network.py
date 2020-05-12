@@ -22,6 +22,8 @@ def _add_layer(s, s_t, num_input, num_output, use_relu, update, id):
     return layer, layer_t
 
 def _add_dense_layer(s, num_input, num_output, is_trainable, id):
+    #generated values follow a normal distribution with specified mean and standard deviation
     W = tf.Variable(tf.truncated_normal([num_input, num_output], stddev=0.1, dtype=tf.float64), trainable = is_trainable, name="W"+str(id))
     b = tf.Variable(tf.constant(0.1, shape=[num_output], dtype=tf.float64), trainable = is_trainable, name="b"+str(id))
+    #s=s1, num_input = s2??
     return tf.matmul(s, W) + b, W, b
