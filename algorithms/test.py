@@ -41,7 +41,7 @@ class I_DQN_l:
 		self.replay_buffer = IDQNReplayBuffer(training_params.replay_size)
 		# This proxy adds the machine state representation to the MDP state
 		self.obs_proxy = obs_proxy
-		self.lr = self.training_params.lr
+		self.lr = self.training_params.final_lr
 		self.optimizer = tf.optimizer.Adam(learning_rate=self.lr)
 
 		# count of the number of environmental steps
