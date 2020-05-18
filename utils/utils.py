@@ -109,12 +109,12 @@ class Tester:
 	def get_spec_params(self, spec):
 		return GameParams(self.map, spec, self.consider_night)
 
-	def run_test(self, step, sess, test_function, *test_args):
+	def run_test(self, step, test_function, *test_args):
 		# 'test_function' parameters should be (sess, spec_params, 
 		# training_params, testing_params, *test_args) and returns the reward
 		for t in self.specs:
 			spec_params = self.get_spec_params(t)
-			reward = test_function(sess, spec_params, self.training_params,
+			reward = test_function( spec_params, self.training_params,
 									self.testing_params, *test_args)
 			if step not in self.results[t]:
 				self.results[t][step] = []

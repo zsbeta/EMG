@@ -1,7 +1,7 @@
 import tensorflow as tf
 import os.path, time
 import numpy as np
-from utils.network import get_MLP
+from utils.network import DQN
 
 """
 This class includes a list of policies (a.k.a neural nets) for achieving different LTL goals
@@ -132,6 +132,8 @@ class Policy:
 
         with tf.variable_scope(self.ltl_scope_name): # helps to give different names to this variables for this network
             # Defining regular and target neural nets
+            print(self.ltl_score_name)
+            input()
             self.q_values, self.q_target, self.update_target = get_MLP(s1, s2, num_features, num_actions, num_neurons, num_hidden_layers)
             # Q_values -> get optimal actions
             self.best_action = tf.argmax(self.q_values, 1)
@@ -160,5 +162,4 @@ class Policy:
         return self.best_action
 
     def get_q_target_value(self):
-        return self.q_target_value
-
+        return self.q_target_DQN
