@@ -6,7 +6,7 @@ from utils.schedules import LinearSchedule
 from utils.dfa import *
 from utils.game import *
 from utils.utils import clear_screen
-
+from tensorflow.python.framework import ops
 # from common.schedules import LinearSchedule
 
 class I_DQN_l:
@@ -88,14 +88,49 @@ class I_DQN_l:
 		q_values = self.DQN.call(s1)
 		best_action = tf.argmax(q_values, 1)
 		self.best_action = best_action
-		#print("---best action", self.best_action)
-		#input()
+		
 		return self.best_action
 		#return self.sess.run(self.best_action, {self.s1: s1})
 
 	def update_target_network(self):
 		#for dqn, target_dqn in zip(self.DQN, self.DQN_target):
+		print("-----Update target networks weight:")
+		#print("DQN: ",np.array(self.DQN.get_weights()).shape)
 		self.DQN_target.set_weights(self.DQN.get_weights())
+
+		gen1 = np.array(self.DQN.get_weights())
+		gen2 = np.array(self.DQN_target.get_weights())
+		for param1, param2 in zip(gen1, gen2):
+			#param1 (size of components, ) if (2, ): has the weights and bias. if (1, ) only weight matrix
+			for item in range(param1.shape[0]):
+				W1 = param1[item]
+				W2 = param2[item]
+				if(len(W1.shape) == 2): #weight w_matrix
+					num_variables = W1.shape[0]
+	                		# Crossover opertation [Indexed by row]
+					num_cross_overs = fastrand.pcg32bounded(num_variables * 2)  # Lower bounded on full swaps
+					for i in range(num_cross_overs):
+			 			receiver_choice = random.random()  # Choose which gene to receive the perturbatio
+			 			if (receiver_choice < 0.5):
+			        			ind_cr = fastrand.pcg32bounded(W1.shape[0])  #
+			        			W1[ind_cr, :] = W2[ind_cr, :]
+						else:
+							ind_cr = fastrand.pcg32bounded(W1.shape[0])  #
+							W2[ind_cr, :] = W1[ind_cr, :]
+				elif (len(W1.shape) == 1): #bias vector
+					num_variables = W1.shape[0]
+	               			 # Crossover opertation [Indexed by row]
+					num_cross_overs = fastrand.pcg32bounded(num_variables)  # Lower bounded on full swaps
+					for i in range(num_cross_overs):
+						receiver_choice = random.random()  # Choose which gene to receive the perturbation
+					    if receiver_choice < 0.5:
+						ind_cr = fastrand.pcg32bounded(W1.shape[0])  #
+						W1[ind_cr] = W2[ind_cr]
+					    else:
+						ind_cr = fastrand.pcg32bounded(W1.shape[0])  #
+						W2[ind_cr] = W1[ind_cr]
+		print("finishing crossover")
+		input()
 
 	def get_steps(self):
 		return self.step
@@ -355,7 +390,7 @@ def run_experiments(tester, curriculum, saver, num_times, show_print, render):
 			spec_params = tester.get_spec_params(spec)
 			train_DQNs(DQNs, spec_params, tester, curriculum, show_print,
 				render)
-		tf.reset_default_graph()
+		ops.reset_default_graph()
 		# Backing up the results
 		saver.save_results()
 
