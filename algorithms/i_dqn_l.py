@@ -32,7 +32,7 @@ class I_DQN_l:
 		n_hidden_layers = 2
 		self.DQN = DQN(self.num_features, self.num_actions, n_neurons, n_hidden_layers)
 		self.DQN_target = DQN(self.num_features, self.num_actions, n_neurons, n_hidden_layers)
-		
+
 		self.DQN.build((None,self.num_features))
 		self.DQN_target.build((None,self.num_features))
 		#self.DQN.summary()
@@ -88,7 +88,7 @@ class I_DQN_l:
 		q_values = self.DQN.call(s1)
 		best_action = tf.argmax(q_values, 1)
 		self.best_action = best_action
-		
+
 		return self.best_action
 		#return self.sess.run(self.best_action, {self.s1: s1})
 
@@ -107,28 +107,28 @@ class I_DQN_l:
 				W2 = param2[item]
 				if(len(W1.shape) == 2): #weight w_matrix
 					num_variables = W1.shape[0]
-	                		# Crossover opertation [Indexed by row]
+							# Crossover opertation [Indexed by row]
 					num_cross_overs = fastrand.pcg32bounded(num_variables * 2)  # Lower bounded on full swaps
 					for i in range(num_cross_overs):
 			 			receiver_choice = random.random()  # Choose which gene to receive the perturbatio
 			 			if (receiver_choice < 0.5):
-			        			ind_cr = fastrand.pcg32bounded(W1.shape[0])  #
-			        			W1[ind_cr, :] = W2[ind_cr, :]
+							ind_cr = fastrand.pcg32bounded(W1.shape[0])  #
+							W1[ind_cr, :] = W2[ind_cr, :]
 						else:
 							ind_cr = fastrand.pcg32bounded(W1.shape[0])  #
 							W2[ind_cr, :] = W1[ind_cr, :]
 				elif (len(W1.shape) == 1): #bias vector
 					num_variables = W1.shape[0]
-	               			 # Crossover opertation [Indexed by row]
+					# Crossover opertation [Indexed by row]
 					num_cross_overs = fastrand.pcg32bounded(num_variables)  # Lower bounded on full swaps
 					for i in range(num_cross_overs):
 						receiver_choice = random.random()  # Choose which gene to receive the perturbation
-					    if receiver_choice < 0.5:
-						ind_cr = fastrand.pcg32bounded(W1.shape[0])  #
-						W1[ind_cr] = W2[ind_cr]
-					    else:
-						ind_cr = fastrand.pcg32bounded(W1.shape[0])  #
-						W2[ind_cr] = W1[ind_cr]
+						if receiver_choice < 0.5:
+							ind_cr = fastrand.pcg32bounded(W1.shape[0])  #
+							W1[ind_cr] = W2[ind_cr]
+						else:
+							ind_cr = fastrand.pcg32bounded(W1.shape[0])  #
+							W2[ind_cr] = W1[ind_cr]
 		print("finishing crossover")
 		input()
 
