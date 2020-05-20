@@ -4,9 +4,31 @@ from algorithms import i_dqn_l, i_lpopl
 from utils.utils import Tester, Saver, TestingParameters
 from utils.curriculum import CurriculumLearner
 
+
+class Agent:
+	def __init__(self, args, env):
+		self.args = args; self.env = env
+		self.evolver = utils_ne.SSNE(self.args)
+
+		#Init population
+		self.pop = []
+		for _ in range(args.pop_size):
+			self.pop.append(ddpg.Actor(args))
+
+		#Turn off gradients and put in eval mode
+		for actor in self.pop: actor.eval()
+
+		#Init RL Agent
+		self.rl_agent = ddpg.DDPG(args)
+		self.replay_buffer = replay_memory.ReplayMemory(args.buffer_size)
+		self.ounoise = ddpg.OUNoise(args.action_dim)
+
+		#Trackers
+		self.num_games = 0; self.num_frames = 0; self.gen_frames = None
+
 class TrainingParameters:
 	def __init__(self, final_lr=0.0005, max_timesteps_per_spec=25000,
-				replay_size=25000, print_freq=1000, exploration_frac=0.2, 
+				replay_size=25000, print_freq=1000, exploration_frac=0.2,
 				final_exploration=0.02, values_network_update_freq=1,
 				batch_size=32, learning_starts=1000, gamma=0.9,
 				target_network_update_freq=100):
@@ -73,7 +95,7 @@ def run_experiment(alg_name, map_id, specs_id, num_times, steps, r_good,
 			show_print, render)
 	else:
 
-		i_lpopl.run_experiments(tester, curriculum, saver, num_times, 
+		i_lpopl.run_experiments(tester, curriculum, saver, num_times,
 								show_print, render)
 def run_multiple_experiments(alg, num_steps, specifications_id, multi_ag,
 								show_print, render):
@@ -116,17 +138,17 @@ if __name__ == "__main__":
 		 	domain that is inspired on Minecraft.')
 	parser.add_argument('--num_steps', default = 250000, type=int,
 		help='total number of training steps')
-	parser.add_argument('--show_Print', default = True, 
+	parser.add_argument('--show_Print', default = True,
 		action ='store_false', help='this paremeter tells if print progress')
-	parser.add_argument('--render', default = False, 
+	parser.add_argument('--render', default = False,
 		action ='store_true', help='this paremeter tells if the map is rendered')
-	parser.add_argument('--singleA', default = False, 
+	parser.add_argument('--singleA', default = False,
 		action ='store_true', help='this paremeter selects single agent \
 									experiments, multi-agent are default opt')
-	parser.add_argument('--algorithm', default='i-dqn-l', type=str, 
+	parser.add_argument('--algorithm', default='i-dqn-l', type=str,
 						help='This parameter indicated which RL algorithm to \
 						use. The options are: ' + str(algorithms))
-	parser.add_argument('--specifications', default='interleaving', type=str, 
+	parser.add_argument('--specifications', default='interleaving', type=str,
 		help='This parameter indicated which specifications to solve. \
 		The options are: ' + str(specifications))
 	"""
