@@ -110,9 +110,8 @@ class I_DQN_l:
 					# Crossover opertation [Indexed by row]
 					num_cross_overs = fastrand.pcg32bounded(num_variables * 2)  # Lower bounded on full swaps
 					for i in range(num_cross_overs):
-			 			receiver_choice = random.random() # Choose which gene to receive the perturbation
+						receiver_choice = random.random()# Choose which gene to receive the perturbation
 						if(receiver_choice < 0.5):
-						#if(receiver_choice<0.5):
 							ind_cr = fastrand.pcg32bounded(W1.shape[0])
 							W1[ind_cr, :] = W2[ind_cr, :]
 						else:
