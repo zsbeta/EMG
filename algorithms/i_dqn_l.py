@@ -8,7 +8,7 @@ from utils.game import *
 from utils.utils import clear_screen
 from tensorflow.python.framework import ops
 # from common.schedules import LinearSchedule
-
+import fastrand,math
 class I_DQN_l:
 	"""
 	feedfodward DQN
@@ -107,23 +107,24 @@ class I_DQN_l:
 				W2 = param2[item]
 				if(len(W1.shape) == 2): #weight w_matrix
 					num_variables = W1.shape[0]
-							# Crossover opertation [Indexed by row]
+					# Crossover opertation [Indexed by row]
 					num_cross_overs = fastrand.pcg32bounded(num_variables * 2)  # Lower bounded on full swaps
 					for i in range(num_cross_overs):
-			 			receiver_choice = random.random()  # Choose which gene to receive the perturbatio
-			 			if (receiver_choice < 0.5):
-							ind_cr = fastrand.pcg32bounded(W1.shape[0])  #
+			 			receiver_choice = random.random() # Choose which gene to receive the perturbation
+						if(receiver_choice < 0.5):
+						#if(receiver_choice<0.5):
+							ind_cr = fastrand.pcg32bounded(W1.shape[0])
 							W1[ind_cr, :] = W2[ind_cr, :]
 						else:
-							ind_cr = fastrand.pcg32bounded(W1.shape[0])  #
+							ind_cr = fastrand.pcg32bounded(W1.shape[0])
 							W2[ind_cr, :] = W1[ind_cr, :]
-				elif (len(W1.shape) == 1): #bias vector
+				elif(len(W1.shape) == 1): #bias vector
 					num_variables = W1.shape[0]
 					# Crossover opertation [Indexed by row]
 					num_cross_overs = fastrand.pcg32bounded(num_variables)  # Lower bounded on full swaps
 					for i in range(num_cross_overs):
 						receiver_choice = random.random()  # Choose which gene to receive the perturbation
-						if receiver_choice < 0.5:
+						if(receiver_choice < 0.5):
 							ind_cr = fastrand.pcg32bounded(W1.shape[0])  #
 							W1[ind_cr] = W2[ind_cr]
 						else:
