@@ -94,10 +94,10 @@ class I_DQN_l:
 
 	def update_target_network(self):
 		#for dqn, target_dqn in zip(self.DQN, self.DQN_target):
-		print("-----Update target networks weight:")
+		#print("-----Update target networks weight:")
 		#print("DQN: ",np.array(self.DQN.get_weights()).shape)
 		self.DQN_target.set_weights(self.DQN.get_weights())
-
+		###Below is a tesing for the crossover. 
 		gen1 = np.array(self.DQN.get_weights())
 		gen2 = np.array(self.DQN_target.get_weights())
 		for param1, param2 in zip(gen1, gen2):
@@ -129,8 +129,8 @@ class I_DQN_l:
 						else:
 							ind_cr = fastrand.pcg32bounded(W1.shape[0])  #
 							W2[ind_cr] = W1[ind_cr]
-		print("finishing crossover")
-		input()
+		#print("finishing crossover")
+		#input()
 
 	def get_steps(self):
 		return self.step
