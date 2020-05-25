@@ -62,9 +62,21 @@ class I_DQN_l:
 		from replay buffer.
 		"""
 		s1, a, r, s2, done = self.replay_buffer.sample(self.batch_size)
+
+		# target, out of gradients
+		q_target = self.DQN_target.call(s2)
+		q_max = tf.reduce_max(q_target, axis=-1)
+		# print("target.shape", q_target.shape)
+		# print("q_max:", q_max)
+		q_max = q_max * (1.0-done) # dead ends must have q_max equal to zero
+		# agsgs+=1
+		q_target_value = r + self.gamma * q_max
+
+
+
 		with tf.GradientTape() as tape:
 			q_values = self.DQN.call(s1)
-			q_target = self.DQN_target.call(s2) #s2 is the next_state
+
 			# Q_values -> get optimal actions
 			self.best_action = tf.argmax(q_values, 1)
 			# Optimizing with respect to q_target
@@ -72,9 +84,6 @@ class I_DQN_l:
 				dtype=tf.float32)
 			q_current = tf.reduce_sum(tf.multiply(q_values, action_mask), 1)
 
-			q_max = tf.reduce_max(q_target, axis=1)
-			q_max = q_max * (1.0-done) # dead ends must have q_max equal to zero
-			q_target_value = r + self.gamma * q_max
 			q_target_value = tf.stop_gradient(q_target_value)
 
 			# Computing td-error and loss function
@@ -86,7 +95,7 @@ class I_DQN_l:
 
 	def get_best_action(self, s1):
 		q_values = self.DQN.call(s1)
-		best_action = tf.argmax(q_values, 1)
+		best_action = tf.argmax(q_values, -1)
 		self.best_action = best_action
 
 		return self.best_action
@@ -97,7 +106,7 @@ class I_DQN_l:
 		#print("-----Update target networks weight:")
 		#print("DQN: ",np.array(self.DQN.get_weights()).shape)
 		self.DQN_target.set_weights(self.DQN.get_weights())
-		###Below is a tesing for the crossover. 
+		###Below is a tesing for the crossover.
 		gen1 = np.array(self.DQN.get_weights())
 		gen2 = np.array(self.DQN_target.get_weights())
 		for param1, param2 in zip(gen1, gen2):
