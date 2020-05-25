@@ -28,10 +28,10 @@ class DQN(Model):
 			self.last_layer = tf.keras.layers.Dense(units = n_outputs, activation ="relu")
 
 		self.FLAG = True
-	
+
 	def build(self, input_shape):
 	 	super(DQN, self).build(input_shape)
-	
+
 	def call(self, s):
 		s = tf.dtypes.cast(s, tf.float32)
 		# print("shape of input", s.shape)
@@ -58,32 +58,68 @@ class DQN(Model):
 				layer_list[i].set_weights(parameter)
 
 
+class MLPs(Model):
+	"""
+	DQN value and target networks
+	"""
+	def init(self, n_inputs, n_outputs, trainable, board = 0,
+		n_hlayers = 2, n_neurons = 64, softmax = False, name='FF'):
 
-#
-# def get_MLP(s1, s2, num_features, num_actions, num_neurons, num_hidden_layers):
-#     # Instructions to update the target network
-#     update_target = []
-#     # First layer
-#     layer, layer_t = _add_layer(s1, s2, num_features, num_neurons, True, update_target, 0)
-#     # Hidden layers
-#     for i in range(num_hidden_layers):
-#         layer, layer_t = _add_layer(layer, layer_t, num_neurons, num_neurons, True, update_target, i+1)
-#     # Output Layer
-#     q_values, q_target = _add_layer(layer, layer_t, num_neurons, num_actions, False, update_target, num_hidden_layers+1)
-#     return q_values, q_target, update_target
-#
-# def _add_layer(s, s_t, num_input, num_output, use_relu, update, id):
-#     layer, W, b = _add_dense_layer(s, num_input, num_output, True, id)
-#     layer_t, W_t, b_t = _add_dense_layer(s_t, num_input, num_output, False, id)
-#     update.extend([tf.assign(W_t,W), tf.assign(b_t,b)])
-#     if use_relu:
-#         layer = tf.nn.relu(layer)
-#         layer_t = tf.nn.relu(layer_t)
-#     return layer, layer_t
-#
-# def _add_dense_layer(s, num_input, num_output, is_trainable, id):
-#     #generated values follow a normal distribution with specified mean and standard deviation
-#     W = tf.Variable(tf.truncated_normal([num_input, num_output], stddev=0.1, dtype=tf.float64), trainable = is_trainable, name="W"+str(id))
-#     b = tf.Variable(tf.constant(0.1, shape=[num_output], dtype=tf.float64), trainable = is_trainable, name="b"+str(id))
-#
-#     return tf.matmul(s, W) + b, W, b
+		super(MLPs, self).init(name=name)
+		self.trainable = trainable
+		self._initialize_variables(n_inputs, n_outputs, n_hlayers, n_neurons,
+									trainable)
+		self.trainable_variablesD = [self.w, self.b]
+		self.n_hlayers = n_hlayers
+		self.softmax = softmax
+
+	def _initialize_variables(self, n_inputs, n_outputs, n_hlayers, n_neurons,
+								trainable):
+		rand_trun = tf.initializers.TruncatedNormal(mean=0.0, stddev=0.1)
+		# Training Net
+		self.w = {0: tf.Variable(initial_value = rand_trun(
+													[n_inputs, n_neurons],
+													dtype=tf.float32),
+										trainable = trainable)}
+		self.b = {0: tf.Variable(initial_value = tf.constant(0.1,
+													shape = [n_neurons],
+													dtype = tf.float32),
+										trainable = trainable)}
+		for i in range(1, n_hlayers+1):
+			self.w[i] = tf.Variable(initial_value = rand_trun(
+														[n_neurons, n_neurons],
+														dtype = tf.float32),
+											trainable = trainable)
+			self.b[i] = tf.Variable(initial_value = tf.constant(0.1,
+														shape=[n_neurons],
+														dtype=tf.float32),
+											trainable = trainable)
+		self.w[n_hlayers+1] = tf.Variable(initial_value = rand_trun(
+													[n_neurons, 128],
+													dtype=tf.float32),
+												trainable = trainable)
+		self.b[n_hlayers+1] = tf.Variable(initial_value = tf.constant(0.1,
+															shape = [128],
+															dtype = tf.float32),
+												trainable = trainable)
+		self.w[n_hlayers+2] = tf.Variable(initial_value = rand_trun(
+													[128, n_outputs],
+													dtype=tf.float32),
+												trainable = trainable)
+		self.b[n_hlayers+2] = tf.Variable(initial_value = tf.constant(0.1,
+															shape = [n_outputs],
+															dtype = tf.float32),
+												trainable = trainable)
+	def forward(self, s):
+		s = s.astype(np.float32)
+		# print("shape of input", s.shape)
+		layer = tf.matmul(s, self.w[0]) + self.b[0]
+		layer = tf.nn.relu(layer)
+		for i in range(1, self.n_hlayers+2):
+			layer = tf.matmul(layer, self.w[i]) + self.b[i]
+			layer = tf.nn.relu(layer)
+		values = tf.matmul(layer, self.w[self.n_hlayers+2]) +\
+			self.b[self.n_hlayers+2]
+		if self.softmax: values = tf.nn.softmax(values)
+
+		return values
