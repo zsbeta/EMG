@@ -111,45 +111,42 @@ class I_DQN_l:
 								self.DQN_target.trainable_weights):
 			var_tar.assign(var)
 		w = np.array(self.DQN.trainable_weights)
-		print("---size: ", w.shape, (w[0].shape))
+		print("---size: ", w.shape, "size 2: ", (w[0].shape)==2)
 		for var in self.DQN.trainable_weights:
 			print("----updating target: ")
 			print(var)
 			input()
 		# ###Below is a tesing for the crossover.
-		gen1 = np.array(self.DQN.get_weights())
-		gen2 = np.array(self.DQN_target.get_weights())
-		for param1, param2 in zip(gen1, gen2):
+		gen1 = np.array(self.DQN.trainable_weights())
+		gen2 = np.array(self.DQN_target.trainable_weights())
+		for W1, W2 in zip(gen1, gen2):
 		# 	#param1 (size of components, ) if (2, ): has the weights and bias. if (1, ) only weight matrix
-			for item in range(param1.shape[0]):
-				W1 = param1[item]
-		 		W2 = param2[item]
-		# 		if(len(W1.shape) == 2): #weight w_matrix
-		# 			num_variables = W1.shape[0]
-		# 			# Crossover opertation [Indexed by row]
-		# 			num_cross_overs = fastrand.pcg32bounded(num_variables * 2)  # Lower bounded on full swaps
-		# 			for i in range(num_cross_overs):
-		# 				receiver_choice = random.random()# Choose which gene to receive the perturbation
-		# 				if(receiver_choice < 0.5):
-		# 					ind_cr = fastrand.pcg32bounded(W1.shape[0])
-		# 					W1[ind_cr, :] = W2[ind_cr, :]
-		# 				else:
-		# 					ind_cr = fastrand.pcg32bounded(W1.shape[0])
-		# 					W2[ind_cr, :] = W1[ind_cr, :]
-		# 		elif(len(W1.shape) == 1): #bias vector
-		# 			num_variables = W1.shape[0]
-		# 			# Crossover opertation [Indexed by row]
-		# 			num_cross_overs = fastrand.pcg32bounded(num_variables)  # Lower bounded on full swaps
-		# 			for i in range(num_cross_overs):
-		# 				receiver_choice = random.random()  # Choose which gene to receive the perturbation
-		# 				if(receiver_choice < 0.5):
-		# 					ind_cr = fastrand.pcg32bounded(W1.shape[0])  #
-		# 					W1[ind_cr] = W2[ind_cr]
-		# 				else:
-		# 					ind_cr = fastrand.pcg32bounded(W1.shape[0])  #
-		# 					W2[ind_cr] = W1[ind_cr]
-		#print("finishing crossover")
-		#input()
+			if(len(W1.shape) == 2): #weight w_matrix
+				num_variables = W1.shape[0]
+				# Crossover opertation [Indexed by row]
+				num_cross_overs = fastrand.pcg32bounded(num_variables * 2)  # Lower bounded on full swaps
+				for i in range(num_cross_overs):
+					receiver_choice = random.random()# Choose which gene to receive the perturbation
+					if(receiver_choice < 0.5):
+						ind_cr = fastrand.pcg32bounded(W1.shape[0])
+						W1[ind_cr, :] = W2[ind_cr, :]
+					else:
+						ind_cr = fastrand.pcg32bounded(W1.shape[0])
+						W2[ind_cr, :] = W1[ind_cr, :]
+			elif(len(W1.shape) == 1): #bias vector
+				num_variables = W1.shape[0]
+				# Crossover opertation [Indexed by row]
+				num_cross_overs = fastrand.pcg32bounded(num_variables)  # Lower bounded on full swaps
+				for i in range(num_cross_overs):
+					receiver_choice = random.random()  # Choose which gene to receive the perturbation
+					if(receiver_choice < 0.5):
+						ind_cr = fastrand.pcg32bounded(W1.shape[0])  #
+						W1[ind_cr] = W2[ind_cr]
+					else:
+						ind_cr = fastrand.pcg32bounded(W1.shape[0])  #
+						W2[ind_cr] = W1[ind_cr]
+		print("finishing crossover")
+		input()
 
 	def get_steps(self):
 		return self.step
