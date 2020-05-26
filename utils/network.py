@@ -62,10 +62,10 @@ class MLPs(Model):
 	"""
 	DQN value and target networks
 	"""
-	def init(self, n_inputs, n_outputs, trainable, board = 0,
+	def __init__(self, n_inputs, n_outputs, trainable, board = 0,
 		n_hlayers = 2, n_neurons = 64, softmax = False, name='FF'):
 
-		super(MLPs, self).init(name=name)
+		super(MLPs, self).__init__(name=name)
 		self.trainable = trainable
 		self._initialize_variables(n_inputs, n_outputs, n_hlayers, n_neurons,
 									trainable)

@@ -29,13 +29,11 @@ class I_DQN_l:
 		#(self, n_inputs, n_outputs, trainable, board = 0,
 		#n_hlayers = 2, n_neurons = 64, softmax = False, name='FF'):
 		n_neurons = 64
-		n_hidden_layers = 2
+		n_hlayers = 2
 		#self.DQN = DQN(self.num_features, self.num_actions, n_neurons, n_hidden_layers)
 		#self.DQN_target = DQN(self.num_features, self.num_actions, n_neurons, n_hidden_layers)
-		self.DQN = MLPs(num_features, num_actions, trainable = True,
-								n_hlayers = 2, n_neurons = 80)
-		self.DQN_target =  MLPs(num_features, num_actions, trainable = True,
-								n_hlayers = 2, n_neurons = 80)
+		self.DQN = MLPs(num_features, num_actions, trainable = True)
+		self.DQN_target =  MLPs(num_features, num_actions, trainable = True)
 		#self.DQN.build((None,self.num_features))
 		#self.DQN_target.build((None,self.num_features))
 		#self.DQN.summary()
@@ -67,7 +65,7 @@ class I_DQN_l:
 		s1, a, r, s2, done = self.replay_buffer.sample(self.batch_size)
 
 		# target, out of gradients
-		q_target = self.DQN_target.call(s2)
+		q_target = self.DQN_target.forward(s2)
 		q_max = tf.reduce_max(q_target, axis=-1)
 		# print("target.shape", q_target.shape)
 		# print("q_max:", q_max)
@@ -78,7 +76,7 @@ class I_DQN_l:
 
 
 		with tf.GradientTape() as tape:
-			q_values = self.DQN.call(s1)
+			q_values = self.DQN.forward(s1)
 
 			# Q_values -> get optimal actions
 			self.best_action = tf.argmax(q_values, 1)
@@ -97,7 +95,7 @@ class I_DQN_l:
 
 
 	def get_best_action(self, s1):
-		q_values = self.DQN.call(s1)
+		q_values = self.DQN.forward(s1)
 		best_action = tf.argmax(q_values, -1)
 		self.best_action = best_action
 
@@ -164,9 +162,9 @@ class IDQNReplayBuffer(object):
 		return len(self._storage)
 
 	def add(self, s1, a, r, s2, done):
-		num_features = s1.shape[0]*s1.shape[1]
-		s1 = s1.reshape((1, num_features))
-		s2 = s2.reshape((1, num_features))
+		#num_features = s1.shape[0]*s1.shape[1]
+		#s1 = s1.reshape((1, num_features))
+		#s2 = s2.reshape((1, num_features))
 		data = (s1, a, r, s2, done)
 
 		if self._next_idx >= len(self._storage):
