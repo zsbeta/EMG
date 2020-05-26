@@ -110,7 +110,9 @@ class I_DQN_l:
 		for var, var_tar in zip(self.DQN.trainable_weights,
 								self.DQN_target.trainable_weights):
 			var_tar.assign(var)
-
+			print("----updating target: ")
+			print(var)
+			input()
 		# ###Below is a tesing for the crossover.
 		# gen1 = np.array(self.DQN.get_weights())
 		# gen2 = np.array(self.DQN_target.get_weights())
