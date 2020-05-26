@@ -110,17 +110,20 @@ class I_DQN_l:
 		for var, var_tar in zip(self.DQN.trainable_weights,
 								self.DQN_target.trainable_weights):
 			var_tar.assign(var)
+		w = np.array(self.DQN.trainable_weights)
+		print("---size: ", w.shape, (w[0].shape))
+		for var in self.DQN.trainable_weights:
 			print("----updating target: ")
 			print(var)
 			input()
 		# ###Below is a tesing for the crossover.
-		# gen1 = np.array(self.DQN.get_weights())
-		# gen2 = np.array(self.DQN_target.get_weights())
-		# for param1, param2 in zip(gen1, gen2):
+		gen1 = np.array(self.DQN.get_weights())
+		gen2 = np.array(self.DQN_target.get_weights())
+		for param1, param2 in zip(gen1, gen2):
 		# 	#param1 (size of components, ) if (2, ): has the weights and bias. if (1, ) only weight matrix
-		# 	for item in range(param1.shape[0]):
-		# 		W1 = param1[item]
-		# 		W2 = param2[item]
+			for item in range(param1.shape[0]):
+				W1 = param1[item]
+		 		W2 = param2[item]
 		# 		if(len(W1.shape) == 2): #weight w_matrix
 		# 			num_variables = W1.shape[0]
 		# 			# Crossover opertation [Indexed by row]
