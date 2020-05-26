@@ -110,12 +110,12 @@ class I_DQN_l:
 		for var, var_tar in zip(self.DQN.trainable_weights,
 								self.DQN_target.trainable_weights):
 			var_tar.assign(var)
-		w = np.array(self.DQN.trainable_weights)
-		print("---size: ", w.shape, "size 2: ", len(w[0].shape)==2)
-		for i, var in enumerate(self.DQN.trainable_weights):
-			print("----updating target: ", i)
-			print(var)
-			input()
+		#w = np.array(self.DQN.trainable_weights)
+		#print("---size: ", w.shape, "size 2: ", len(w[0].shape)==2)
+		#for i, var in enumerate(self.DQN.trainable_weights):
+		#	print("----updating target: ", i)
+		#	print(var)
+		#	input()
 		# ###Below is a tesing for the crossover.
 		gen1 = np.array(self.DQN.trainable_weights)
 		gen2 = np.array(self.DQN_target.trainable_weights)
@@ -129,10 +129,10 @@ class I_DQN_l:
 					receiver_choice = random.random()# Choose which gene to receive the perturbation
 					if(receiver_choice < 0.5):
 						ind_cr = fastrand.pcg32bounded(W1.shape[0])
-						W1[ind_cr, :] = W2[ind_cr, :]
+						W1[ind_cr, :].assign(W2[ind_cr, :])
 					else:
 						ind_cr = fastrand.pcg32bounded(W1.shape[0])
-						W2[ind_cr, :] = W1[ind_cr, :]
+						W2[ind_cr, :].assign(W1[ind_cr, :])
 			elif(len(W1.shape) == 1): #bias vector
 				num_variables = W1.shape[0]
 				# Crossover opertation [Indexed by row]
@@ -141,12 +141,11 @@ class I_DQN_l:
 					receiver_choice = random.random()  # Choose which gene to receive the perturbation
 					if(receiver_choice < 0.5):
 						ind_cr = fastrand.pcg32bounded(W1.shape[0])  #
-						W1[ind_cr] = W2[ind_cr]
+						W1[ind_cr].assign(W2[ind_cr])
 					else:
 						ind_cr = fastrand.pcg32bounded(W1.shape[0])  #
-						W2[ind_cr] = W1[ind_cr]
+						W2[ind_cr].assign(W1[ind_cr])
 		print("finishing crossover")
-		input()
 
 	def get_steps(self):
 		return self.step
