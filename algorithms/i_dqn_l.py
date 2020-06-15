@@ -145,7 +145,6 @@ class I_DQN_l:
 					else:
 						ind_cr = fastrand.pcg32bounded(W1.shape[0])  #
 						W2[ind_cr].assign(W1[ind_cr])
-		print("finishing crossover")
 
 	def get_steps(self):
 		return self.step
@@ -265,7 +264,7 @@ def train_DQNs ( DQNs, spec_params, tester, curriculum, show_print, render):
 
 		# Executing the action
 		reward = env.execute_actions(actions)
-		if render and ep_c%30 is 0:
+		if render and episode_count%30 is 0:
 			time.sleep(0.01)
 			clear_screen()
 			env.show_map()

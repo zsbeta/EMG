@@ -140,7 +140,7 @@ if __name__ == "__main__":
 		help='total number of training steps')
 	parser.add_argument('--show_Print', default = True,
 		action ='store_false', help='this paremeter tells if print progress')
-	parser.add_argument('--render', default = False,
+	parser.add_argument('--render', default = True,
 		action ='store_true', help='this paremeter tells if the map is rendered')
 	parser.add_argument('--singleA', default = False,
 		action ='store_true', help='this paremeter selects single agent \
