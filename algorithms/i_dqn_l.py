@@ -63,7 +63,8 @@ class I_DQN_l:
 		from replay buffer.
 		"""
 		s1, a, r, s2, done = self.replay_buffer.sample(self.batch_size)
-
+		#print("line 65, learnig sample: ", s2.shape,"\n",s2)
+		#input()
 		# target, out of gradients
 		q_target = self.DQN_target.forward(s2)
 		q_max = tf.reduce_max(q_target, axis=-1)
